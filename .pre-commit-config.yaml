@@ -1,0 +1,45 @@
+default_language_version:
+  # default language version for each language
+  python: python3.10
+
+exclude : "migrations"
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0  # Use the ref you want to point at
+    hooks:
+      - id: check-added-large-files
+      - id: check-docstring-first
+      - id: detect-private-key
+      - id: name-tests-test
+        args: [ "--django" ]
+
+  - repo: https://github.com/pycqa/bandit
+    rev: 1.6.2
+    hooks:
+      - id: bandit
+        # The “-iii” and “-ll” args are flags that tell bandit to only
+        # report issues with high confidence and of medium or above severity.
+        args: [ '-iii', '-ll' ]
+
+  - repo: https://github.com/psf/black
+    rev: 22.12.0
+    hooks:
+      - id: black
+
+  - repo: https://github.com/pycqa/isort
+    rev: 5.12.0
+    hooks:
+      - id: isort
+        args: ["--profile", "black"]
+
+  - repo: https://github.com/PyCQA/flake8.git
+    rev: 6.0.0
+    hooks:
+      - id: flake8
+        additional_dependencies: [
+          "flake8-bugbear",
+          "flake8-comprehensions",
+          "flake8-print",
+          "flake8-simplify",
+          "flake8-builtins",
+        ]

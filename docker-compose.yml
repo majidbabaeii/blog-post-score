@@ -1,0 +1,48 @@
+version: '3.9'
+
+services:
+  web:
+    build: .
+    command: bash -c "while !</dev/tcp/rabbitmq/5672; do sleep 1;done;while !</dev/tcp/postgres/5432; do sleep 1; done;python manage.py migrate && python manage.py test_data && python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+      - rabbitmq
+      - redis
+  celery:
+    build: .
+    command: bash -c "while !</dev/tcp/rabbitmq/5672; do sleep 1;done;while !</dev/tcp/postgres/5432; do sleep 1; done;celery -A blog_post worker --concurrency=2 -B"
+    volumes:
+      - .:/app
+    depends_on:
+      - postgres
+      - rabbitmq
+      - redis
+  postgres:
+    image: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=task
+    ports:
+      - "5432:5432"
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+
+  rabbitmq:
+    image: rabbitmq:management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+
+
+volumes:
+  postgres_data:

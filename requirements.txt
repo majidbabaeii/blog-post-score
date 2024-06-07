@@ -1,0 +1,8 @@
+django~=5.0.0
+djangorestframework
+django-filter
+django-environ
+redis
+celery
+django-celery-beat
+psycopg[binary]
